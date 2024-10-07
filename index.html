@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Website with Auth</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Header and Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #333;
+      padding: 10px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 14px 16px;
+    }
+
+    /* Service name */
+    .service-name {
+      color: white;
+      font-size: 20px;
+      margin-left: 10px;
+    }
+
+    /* Hamburger Menu */
+    .menu {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .menu-icon {
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 30px;
+      background-color: #f9f9f9;
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+      min-width: 160px;
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #ddd;
+    }
+
+    /* Auth Buttons */
+    .auth-buttons {
+      display: flex;
+    }
+
+    .auth-buttons a {
+      margin-left: 10px;
+    }
+
+    /* Form Styles */
+    .form-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid #888;
+      background-color: white;
+      z-index: 2000;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      width: 300px;
+    }
+
+    .form-popup input[type="text"], 
+    .form-popup input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .form-popup button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .form-popup button:hover {
+      opacity: 0.8;
+    }
+
+    .form-popup .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* Main content */
+    .content {
+      margin-top: 70px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Section content */
+    .section-content {
+      display: none;
+      margin-top: 20px;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .auth-buttons {
+        margin-top: 10px;
+      }
+
+      .form-popup {
+        width: 90%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .menu-icon {
+        font-size: 20px;
+      }
+
+      .navbar a {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+  <!-- Hamburger Menu on the Left -->
+  <div class="menu">
+    <span class="menu-icon" onclick="toggleDropdown()">&#9776;</span>
+    <span class="service-name">Tên Dịch Vụ</span>
+    <div id="dropdown" class="dropdown-content">
+      <a href="#" onclick="showSection('section1')">Section 1</a>
+      <a href="#" onclick="showSection('section2')">Section 2</a>
+      <a href="#" onclick="showSection('section3')">Section 3</a>
+    </div>
+  </div>
+
+  <!-- Auth Buttons on the Right -->
+  <div class="auth-buttons" id="authButtons">
+    <a href="#" onclick="openLogin()">Login</a>
+    <a href="#" onclick="openRegister()">Register</a>
+  </div>
+</div>
+
+<!-- Login Form -->
+<div id="loginForm" class="form-popup">
+  <span class="close" onclick="closeForm('loginForm')">&times;</span>
+  <h2>Login</h2>
+  <label for="username">Username</label>
+  <input type="text" id="loginUsername" name="username" required>
+  <label for="password">Password</label>
+  <input type="password" id="loginPassword" name="password" required>
+  <button type="button" onclick="login()">Login</button>
+</div>
+
+<!-- Register Form -->
+<div id="registerForm" class="form-popup">
+  <span class="close" onclick="closeForm('registerForm')">&times;</span>
+  <h2>Register</h2>
+  <label for="newUsername">New Username</label>
+  <input type="text" id="newUsername" name="newUsername" required>
+  <label for="newPassword">New Password</label>
+  <input type="password" id="newPassword" name="newPassword" required>
+  <label for="confirmPassword">Confirm Password</label>
+  <input type="password" id="confirmPassword" name="confirmPassword" required>
+  <button type="button" onclick="register()">Register</button>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+  <h1>Welcome to the Website!</h1>
+  <p>Select a section from the menu or log in/register.</p>
+  <div id="section1" class="section-content">
+    <h2>Content for Section 1</h2>
+    <p>This is the content for Section 1.</p>
+  </div>
+  <div id="section2" class="section-content">
+    <h2>Content for Section 2</h2>
+    <p>This is the content for Section 2.</p>
+  </div>
+  <div id="section3" class="section-content">
+    <h2>Content for Section 3</h2>
+    <p>This is the content for Section 3.</p>
+  </div>
+</div>
+
+<script>
+// Sample user data for login/register
+let users = [];
+let isLoggedIn = false; // Track login status
+
+// Open login form
+function openLogin() {
+  document.getElementById('loginForm').style.display = 'block';
+}
+
+// Open register form
+function openRegister() {
+  document.getElementById('registerForm').style.display = 'block';
+}
+
+// Close form
+function closeForm(formId) {
+  document.getElementById(formId).style.display = 'none';
+}
+
+// Login function
+function login() {
+  const username = document.getElementById('loginUsername').value;
+  const password = document.getElementById('loginPassword').value;
+
+  fetch('/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, password })
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert(data.message);
+    if (data.message === 'Login successful!') {
+      isLoggedIn = true; // Set login status
+      closeForm('loginForm');
+      updateAuthButtons(); // Update auth buttons
+      showSection(''); // Clear section content
+    }
+  })
+  .catch(error => alert('Error: ' + error));
+}
+
+// Register function
+function register() {
+  const newUsername = document.getElementById('newUsername').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  if (newPassword !== confirmPassword) {
+    alert('Passwords do not match.');
+    return;
+  }
+
+  fetch('/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username: newUsername, password: newPassword })
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert(data.message);
+    if (data.message === 'Registration successful!') {
+      closeForm('registerForm');
+    }
+  })
+  .catch(error => alert('Error: ' + error));
+}
+
+// Toggle dropdown menu
+function toggleDropdown() {
+  const dropdown = document.getElementById('dropdown');
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Show section content
+function showSection(sectionId) {
+  const sections = document.querySelectorAll('.section-content');
+  sections.forEach(section => {
+    section.style.display = section.id === sectionId ? 'block' : 'none';
+  });
+}
+
+// Update auth buttons based on login status
+function updateAuthButtons() {
+  const authButtons = document.getElementById('authButtons');
+  authButtons.innerHTML = isLoggedIn ? 
+    '<a href="#" onclick="logout()">Logout</a>' : 
+    '<a href="#" onclick="openLogin()">Login</a><a href="#" onclick="openRegister()">Register</a>';
+}
+
+// Logout function
+function logout() {
+  isLoggedIn = false; // Reset login status
+  updateAuthButtons(); // Update auth buttons
+  showSection(''); // Clear section content
+}
+
+// Click outside form to close
+window.onclick = function(event) {
+  if (event.target.className === 'form-popup') {
+    closeForm('loginForm');
+    closeForm('registerForm');
+  }
+}
+
+</script>
+</body>
+</html>
